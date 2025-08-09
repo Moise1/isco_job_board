@@ -1,8 +1,9 @@
 import initDB from "./config/db.js";
 
 const runMigrations = async () => {
-  const db = await initDB();
 
+  const db = await initDB();
+  
   console.log("Running migrations...");
   await db.exec(`
     CREATE TABLE IF NOT EXISTS users (
@@ -18,6 +19,8 @@ const runMigrations = async () => {
       title TEXT,
       description TEXT,
       location TEXT,
+      min_salary INTEGER,
+      max_salary INTEGER,
       created_by INTEGER,
       created_at DATETIME DEFAULT CURRENT_TIMESTAMP
     );
