@@ -1,23 +1,16 @@
-import sqlite3 from "sqlite3";
-import { open } from "sqlite";
+import initDB from "./config/db.js";
 
-const initDB = async () => {
-  const db = await open({
-    filename: "./database.sqlite",
-    driver: sqlite3.Database,
-  });
+const runMigrations = async () => {
+  const db = await initDB();
 
-  // Initial schema setup (run only once or via migration script)
+  console.log("Running migrations...");
   await db.exec(`
     CREATE TABLE IF NOT EXISTS users (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
-      first_name TEXT,
-      last_name TEXT,
+      name TEXT,
       email TEXT UNIQUE,
       password TEXT,
-      role TEXT DEFAULT 'user',
-      created_at DATETIME DEFAULT CURRENT_TIMESTAMP
-
+      role TEXT DEFAULT 'user'
     );
 
     CREATE TABLE IF NOT EXISTS jobs (
@@ -40,7 +33,7 @@ const initDB = async () => {
     );
   `);
 
-  return db;
+  console.log("Migrations completed ✅");
 };
 
-export default initDB;
+runMigrations();
