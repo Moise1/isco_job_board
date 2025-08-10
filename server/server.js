@@ -8,7 +8,7 @@ import initDB from "./config/db.js";
 // Routes
 import authRoutes from "./routes/authRoutes.js";
 import jobRoutes from "./routes/jobRoutes.js";
-// import applicationRoutes from "./routes/applicationRoutes.js";
+import applicationRoutes from "./routes/applicationRoutes.js";
 
 dotenv.config();
 
@@ -21,7 +21,7 @@ app.use(bodyParser.json());
 
 app.use("/api/v1/auth", authRoutes);
 app.use("/api/v1/jobs", jobRoutes);
-// app.use("/api/v1/applications", applicationRoutes);
+app.use("/api/v1/applications", applicationRoutes);
 
 // Error handler
 app.use((err, req, res, next) => {
