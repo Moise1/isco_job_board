@@ -2,19 +2,44 @@
 import Joi from "joi";
 
 export const createJobSchema = Joi.object({
-  title: Joi.string().min(3).max(255).required(),
-  description: Joi.string().required(),
-  location: Joi.string().required(),
-  min_salary: Joi.number().optional(),
-  max_salary: Joi.number().required(),
+
+  title: Joi.string().required().messages({
+    "string.base": "title must be a string",
+    "any.required": "title is required",
+  }),
+  description: Joi.string().required().messages({
+    "string.base": "description must be a string",
+    "any.required": "description is required",
+  }),
+  location: Joi.string().required().messages({
+    "string.base": "location must be a string",
+    "any.required": "location is required",
+  }),
+  min_salary: Joi.number().optional().messages({
+    "number.base": "min_salary must be a number",
+  }),
+  max_salary: Joi.number().optional().messages({
+    "number.base": "max_salary must be a number",
+  }),
 });
 
+
 export const updateJobSchema = Joi.object({
-  title: Joi.string().min(3).max(255).optional(),
-  description: Joi.string().optional(),
-  location: Joi.string().optional(),
-  min_salary: Joi.number().optional(),
-  max_salary: Joi.number().optional(),
+  title: Joi.string().min(3).max(255).optional().messages({
+    "string.base": "title must be a string",
+  }),
+  description: Joi.string().optional().messages({
+    "string.base": "description must be a string",
+  }),
+  location: Joi.string().optional().messages({
+    "string.base": "location must be a string",
+  }),
+  min_salary: Joi.number().optional().messages({
+    "number.base": "min_salary must be a number",
+  }),
+  max_salary: Joi.number().optional().messages({
+    "number.base": "max_salary must be a number",
+  }),
 });
 
 
