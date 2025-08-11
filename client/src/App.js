@@ -26,7 +26,7 @@ function App() {
       {/* Navigation */}
       <nav className="navbar">
         <div className="container">
-          <h1 className="logo">JobConnect</h1>
+          <h1 className="logo">JobConnekt</h1>
 
           <div className={`nav-links ${isMenuOpen ? "active" : ""}`}>
             <a href="#job-seekers">For Job Seekers</a>
@@ -48,7 +48,7 @@ function App() {
         <div className="container">
           <div className="hero-text">
             <h1>Your Next Career Move Starts Here</h1>
-            <p>Connecting top talent with great companies</p>
+            <p>Connekting top talent with great companies</p>
             <div className="hero-buttons">
               <button className="primary-button">Find Jobs</button>
               <button className="secondary-button">Post Jobs</button>
@@ -107,7 +107,7 @@ function App() {
       {/* Section 3: Testimonials */}
       <section id="testimonials" className="testimonials-section">
         <div className="container">
-          <h2 className="section-title">Business Owners Love JobConnect</h2>
+          <h2 className="section-title">Business Owners Love JobConnekt</h2>
           <p className="section-subtitle">
             Hear from companies who found exceptional talent through our
             platform
@@ -122,7 +122,7 @@ function App() {
                   className="testimonial-avatar"
                 />
                 <p className="testimonial-text">
-                  "We found our lead developer through JobConnect in just 3
+                  "We found our lead developer through JobConnekt in just 3
                   days. The quality of candidates was outstanding compared to
                   other job boards."
                 </p>
@@ -142,7 +142,7 @@ function App() {
                   className="testimonial-avatar"
                 />
                 <p className="testimonial-text">
-                  "JobConnect saved us 60% on recruitment costs. We hired 5
+                  "JobConnekt saved us 60% on recruitment costs. We hired 5
                   top-performing employees last quarter all through this
                   platform."
                 </p>
@@ -163,7 +163,7 @@ function App() {
                 />
                 <p className="testimonial-text">
                   "As a startup founder, I don't have time to sift through
-                  hundreds of resumes. JobConnect's matching algorithm delivered
+                  hundreds of resumes. JobConnekt's matching algorithm delivered
                   exactly who we needed."
                 </p>
                 <div className="testimonial-author">
@@ -180,13 +180,17 @@ function App() {
       {/* Call to Action */}
       <section className="cta-section">
         <div className="container">
-          <h2>Ready to Transform Your Hiring or Job Search?</h2>
-          <p>
+          {/* <h2>Ready to Transform Your Hiring or Job Search?</h2> */}
+          <h2>Ready to Transform Your Job Search?</h2>
+          {/* <p>
             Join thousands of companies and candidates finding their perfect
             match
+          </p> */}
+          <p>
+            Join thousands of  candidates finding their perfect next career opportunities
           </p>
           <div className="cta-buttons">
-            <button className="primary-button">I'm Hiring</button>
+            {/* <button className="primary-button">I'm Hiring</button> */}
             <button className="primary-button">I Need a Job</button>
           </div>
         </div>
@@ -197,8 +201,8 @@ function App() {
         <div className="container">
           <div className="footer-content">
             <div className="footer-logo">
-              <h2>JobConnect</h2>
-              <p>Making job connections simple and effective</p>
+              <h2>JobConnekt</h2>
+              <p>Making job Connektions simple and effective</p>
             </div>
 
             <div className="footer-links">
@@ -226,7 +230,7 @@ function App() {
           </div>
 
           <div className="footer-bottom">
-            <p>© 2023 JobConnect. All rights reserved.</p>
+            <p>© 2023 JobConnekt. All rights reserved.</p>
           </div>
         </div>
       </footer>

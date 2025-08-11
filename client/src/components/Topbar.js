@@ -27,10 +27,8 @@ export default function TopBar() {
   };
 
   return (
-    <div className="bg-white shadow px-6 py-3 flex justify-between items-center">
-      <div className="text-lg font-semibold">
-        Hey, {user || 'User'}
-      </div>
+    <div className="bg-white shadow px-6 py-3 flex justify-end items-center gap-4">
+      <div className="text-lg font-semibold">Hey, {user || "User"}</div>
 
       <div className="relative" ref={dropdownRef}>
         <button

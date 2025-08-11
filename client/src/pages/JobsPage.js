@@ -15,17 +15,21 @@ import {
   clearFilters,
 } from "../redux/jobsSlice";
 import * as wcc from "world-countries-capitals";
+import JobModal from "../components/JobModal";
 
 function JobsPage() {
+    const [selectedJob, setSelectedJob] = useState(null);
+
   const dispatch = useDispatch();
   const { filteredJobs, loading, error, filters } = useSelector(
     (state) => state.jobs
   );
 
   const [locations, setLocations] = useState([]);
-  const [salaryRange, setSalaryRange] = useState({
-    min: "",
-    max: "",
+
+  const [salaryRange, setLocalSalaryRange] = useState({
+    min_salary: "",
+    max_salary: "",
   });
 
   useEffect(() => {
@@ -61,7 +65,7 @@ function JobsPage() {
 
   const handleSalaryChange = (e) => {
     const { name, value } = e.target;
-    setSalaryRange((prev) => ({
+    setLocalSalaryRange((prev) => ({
       ...prev,
       [name]: value ? parseInt(value) : null,
     }));
@@ -70,15 +74,15 @@ function JobsPage() {
   const applySalaryFilter = () => {
     dispatch(
       setSalaryRange({
-        min: salaryRange.min,
-        max: salaryRange.max,
+        min_salary: salaryRange.min_salary,
+        max_salary: salaryRange.max_salary,
       })
     );
   };
 
   const resetFilters = () => {
     dispatch(clearFilters());
-    setSalaryRange({ min: "", max: "" });
+    setSalaryRange({ min_salary: "", max_salary: "" });
   };
 
   if (loading) return <div className="loading">Loading jobs...</div>;
@@ -134,18 +138,18 @@ function JobsPage() {
           <div className="flex items-center gap-2">
             <input
               type="number"
-              name="min"
+              name="min_salary"
               placeholder="Min salary"
-              value={salaryRange.min || ""}
+              value={salaryRange.min_salary || ""}
               onChange={handleSalaryChange}
               className="w-40 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary"
             />
             <span className="text-gray-500">-</span>
             <input
               type="number"
-              name="max"
+              name="max_salary"
               placeholder="Max salary"
-              value={salaryRange.max || ""}
+              value={salaryRange.max_salary || ""}
               onChange={handleSalaryChange}
               className="w-40 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary"
             />
@@ -203,7 +207,10 @@ function JobsPage() {
                   : job.description}
               </p>
 
-              <button className="w-full py-2 bg-primary text-white rounded-lg hover:bg-primary-dark transition-colors">
+              <button
+                onClick={() => setSelectedJob(job)}
+                className="w-full py-2 bg-primary text-white rounded-lg hover:bg-primary-dark transition-colors"
+              >
                 Apply Now
               </button>
             </div>
@@ -222,6 +229,19 @@ function JobsPage() {
           </div>
         )}
       </div>
+
+      {/* Modal */}
+      {selectedJob && (
+        <JobModal
+          job={selectedJob}
+          onClose={() => setSelectedJob(null)}
+          onSubmit={(applicationData) => {
+            // Handle the application submission
+            console.log("Applying for job:", selectedJob.id, applicationData);
+            setSelectedJob(null); // Close modal after submission
+          }}
+        />
+      )}
     </div>
   );
 }

@@ -9,8 +9,8 @@ const initialState = {
   filters: {
     title: "",
     location: "",
-    salaryMin: null,
-    salaryMax: null,
+    min_salary: null,
+    max_salary: null,
   },
 };
 
@@ -42,16 +42,16 @@ const jobsSlice = createSlice({
       jobsSlice.caseReducers.applyFilters(state);
     },
     setSalaryRange: (state, action) => {
-      state.filters.salaryMin = action.payload.min;
-      state.filters.salaryMax = action.payload.max;
+      state.filters.min_salary = action.payload.min_salary;
+      state.filters.max_salary = action.payload.max_salary;
       jobsSlice.caseReducers.applyFilters(state);
     },
     clearFilters: (state) => {
       state.filters = {
         title: "",
         location: "",
-        salaryMin: null,
-        salaryMax: null,
+        min_salary: null,
+        max_salary: null,
       };
       state.filteredJobs = state.jobs;
     },
@@ -71,10 +71,10 @@ const jobsSlice = createSlice({
           : true;
 
         const matchesSalary =
-          (state.filters.salaryMin === null ||
-            job.max_salary >= state.filters.salaryMin) &&
-          (state.filters.salaryMax === null ||
-            job.min_salary <= state.filters.salaryMax);
+          (state.filters.min_salary === null ||
+            job.max_salary >= state.filters.min_salary) &&
+          (state.filters.max_salary === null ||
+            job.min_salary <= state.filters.max_salary);
 
         return matchesTitle && matchesLocation && matchesSalary;
       });
