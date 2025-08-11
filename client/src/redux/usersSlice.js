@@ -16,7 +16,6 @@ export const loginUser = createAsyncThunk(
 
       const { accessToken } = res.data;
 
-      console.log('access token', accessToken)
       // Save token to localStorage
       localStorage.setItem("token", accessToken);
 
@@ -33,7 +32,7 @@ export const loginUser = createAsyncThunk(
         navigate("/"); // fallback
       }
 
-      return {token: accessToken, decoded}; 
+      return {token: accessToken, user: decoded}; 
     } catch (err) {
       return rejectWithValue(err.response?.data || "Login failed");
     }
@@ -60,8 +59,8 @@ export const signupUser = createAsyncThunk(
 const authSlice = createSlice({
   name: "auth",
   initialState: {
-    user: null,
-    token: null,
+    user: JSON.parse(localStorage.getItem("user")) || null,
+    token: localStorage.getItem("token") || null,
     loading: false,
     error: null,
   },
@@ -70,6 +69,8 @@ const authSlice = createSlice({
       state.user = null;
       state.token = null;
       localStorage.removeItem("token");
+      localStorage.removeItem("user");
+
     },
   },
   extraReducers: (builder) => {
@@ -83,8 +84,8 @@ const authSlice = createSlice({
         state.loading = false;
         state.user = action.payload.user;
         state.token = action.payload.token;
-        console.log('Login successful, token:', action.payload);
         localStorage.setItem("token", action.payload.token);
+        localStorage.setItem("user", JSON.stringify(action.payload.user.first_name));
       })
       .addCase(loginUser.rejected, (state, action) => {
         state.loading = false;

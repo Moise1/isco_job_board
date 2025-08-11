@@ -3,7 +3,7 @@ import { FaUser, FaLock, FaGoogle, FaLinkedin } from "react-icons/fa";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 
-import { loginUser } from "../redux/usersSlices"; 
+import { loginUser } from "../redux/usersSlice"; 
 import "../css/Login.css";
 
 
