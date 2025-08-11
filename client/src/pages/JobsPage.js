@@ -1,5 +1,4 @@
-import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useState,useEffect } from "react";
 import {
   FaBriefcase,
   FaMapMarkerAlt,
@@ -7,154 +6,219 @@ import {
   FaClock,
   FaSearch,
 } from "react-icons/fa";
-import "../css/Jobs.css";
-import api from "../api";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  fetchJobs,
+  setTitleFilter,
+  setLocationFilter,
+  setSalaryRange,
+  clearFilters,
+} from "../redux/jobsSlice";
+import * as wcc from "world-countries-capitals";
 
 function JobsPage() {
-   const [jobs, setJobs] = useState([]);
-   const [loading, setLoading] = useState(true);
-   const [error, setError] = useState(null);
-   const [searchTerm, setSearchTerm] = useState("");
-   const [filters, setFilters] = useState({
-     location: "",
-     salary: "",
-     type: "",
-   });
-   const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const { filteredJobs, loading, error, filters } = useSelector(
+    (state) => state.jobs
+  );
 
-   useEffect(() => {
-     const fetchJobs = async () => {
-       try {
-         const response = await api.get("/jobs"); 
-         setJobs(response.data);
-       } catch (err) {
-         setError(err.message || "Failed to fetch jobs");
-         console.error("Error fetching jobs:", err);
-       } finally {
-         setLoading(false);
-       }
-     };
+  const [locations, setLocations] = useState([]);
+  const [salaryRange, setSalaryRange] = useState({
+    min: "",
+    max: "",
+  });
 
-     fetchJobs();
-   }, []);
+  useEffect(() => {
+    dispatch(fetchJobs());
 
-   const handleApply = (jobId) => {
-     navigate(`/apply/${jobId}`);
-   };
+    // Load country/capital options
+    const countriesData = wcc.getAllCountryDetails();
+    
+    const formattedLocations = countriesData.map((item) => ({
+      label: `${capitalize(item.capital || "")}, ${capitalize(
+        item.country || ""
+      )}`,
+      value: `${capitalize(item.capital || "")}, ${capitalize(
+        item.country || ""
+      )}`.toLowerCase(),
+    }));
 
-   const handleSearch = (e) => {
-     setSearchTerm(e.target.value);
-   };
+    setLocations(formattedLocations);
+  }, [dispatch]);
 
-   const handleFilterChange = (e) => {
-     const { name, value } = e.target;
-     setFilters((prev) => ({
-       ...prev,
-       [name]: value,
-     }));
-   };
+  const capitalize = (str) => {
+    if (!str) return ""; // Add null check
+    return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
+  };
 
-   const filteredJobs = jobs.filter((job) => {
-       const matchesSearch =
-           job?.title?.toLowerCase().includes(searchTerm.toLowerCase());
-     const matchesLocation = filters.location
-       ? job?.location === filters.location
-       : true;
-     const matchesType = filters.type ? job.type === filters.type : true;
+  const handleTitleSearch = (e) => {
+    dispatch(setTitleFilter(e.target.value));
+  };
 
-     return matchesSearch && matchesLocation && matchesType;
-   });
+  const handleLocationChange = (e) => {
+    dispatch(setLocationFilter(e.target.value));
+  };
 
-   if (loading) return <div className="loading">Loading jobs...</div>;
-   if (error) return <div className="error">Error: {error}</div>;
+  const handleSalaryChange = (e) => {
+    const { name, value } = e.target;
+    setSalaryRange((prev) => ({
+      ...prev,
+      [name]: value ? parseInt(value) : null,
+    }));
+  };
+
+  const applySalaryFilter = () => {
+    dispatch(
+      setSalaryRange({
+        min: salaryRange.min,
+        max: salaryRange.max,
+      })
+    );
+  };
+
+  const resetFilters = () => {
+    dispatch(clearFilters());
+    setSalaryRange({ min: "", max: "" });
+  };
+
+  if (loading) return <div className="loading">Loading jobs...</div>;
+  if (error) return <div className="error">Error: {error}</div>;
 
   return (
-    <div className="jobs-container">
-      <div className="jobs-header">
-        <h1>Available Jobs</h1>
-        <p>Find your next career opportunity</p>
+    <div className="max-w-6xl mx-auto px-4 py-8">
+      {/* Header */}
+      <div className="text-center mb-8">
+        <h1 className="text-3xl font-bold text-gray-900 mb-2">
+          Available Jobs
+        </h1>
+        <p className="text-lg text-gray-600">
+          Find your next career opportunity
+        </p>
       </div>
 
-      <div className="search-filter-container">
-        <div className="search-bar">
-          <FaSearch className="search-icon" />
-          <input
-            type="text"
-            placeholder="Search by job title"
-            value={searchTerm}
-            onChange={handleSearch}
-          />
+      <div className="flex flex-col md:flex-row gap-4 mb-8">
+        {/* Search Bar - Takes remaining space */}
+        <div className="flex-1">
+          <div className="relative">
+            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <FaSearch className="text-gray-400" />
+            </div>
+            <input
+              type="text"
+              placeholder="Search by job title"
+              value={filters.title}
+              onChange={handleTitleSearch}
+              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+            />
+          </div>
         </div>
 
-        <div className="filters">
+        {/* Filters - Flex wrap for smaller screens */}
+        <div className="flex flex-wrap gap-2">
+          {/* Location Filter */}
           <select
             name="location"
-            value={filters.location}
-            onChange={handleFilterChange}
+            value={filters.location || ""}
+            onChange={handleLocationChange}
+            className="w-[220px] px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary"
           >
             <option value="">All Locations</option>
-            <option value="Remote">Remote</option>
-            <option value="New York">New York</option>
-            <option value="San Francisco">San Francisco</option>
-            <option value="London">London</option>
+            {locations.map((loc, idx) => (
+              <option key={idx} value={loc.value}>
+                {loc.label}
+              </option>
+            ))}
           </select>
 
-          <select
-            name="type"
-            value={filters.type}
-            onChange={handleFilterChange}
-          >
-            <option value="">All Types</option>
-            <option value="Full-time">Full-time</option>
-            <option value="Part-time">Part-time</option>
-            <option value="Contract">Contract</option>
-            <option value="Internship">Internship</option>
-          </select>
+          {/* Salary Range */}
+          <div className="flex items-center gap-2">
+            <input
+              type="number"
+              name="min"
+              placeholder="Min salary"
+              value={salaryRange.min || ""}
+              onChange={handleSalaryChange}
+              className="w-40 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary"
+            />
+            <span className="text-gray-500">-</span>
+            <input
+              type="number"
+              name="max"
+              placeholder="Max salary"
+              value={salaryRange.max || ""}
+              onChange={handleSalaryChange}
+              className="w-40 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary"
+            />
+          </div>
+
+          {/* Filter Buttons */}
+          <div className="flex gap-2">
+            <button
+              onClick={applySalaryFilter}
+              className="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary-dark transition-colors whitespace-nowrap"
+            >
+              Filter
+            </button>
+            <button
+              onClick={resetFilters}
+              className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors whitespace-nowrap"
+            >
+              Reset
+            </button>
+          </div>
         </div>
       </div>
 
-      <div className="jobs-list">
+      {/* Jobs List */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {filteredJobs.length > 0 ? (
           filteredJobs.map((job) => (
-            <div key={job.id} className="job-card">
-              <div className="job-info">
-                <h3>{job.title}</h3>
-                <p className="company">{job.company}</p>
-
-                <div className="job-meta">
-                  <span>
-                    <FaMapMarkerAlt /> {job.location}
-                  </span>
-                  <span>
-                    <FaMoneyBillWave /> {job.salary}
-                  </span>
-                  <span>
-                    <FaClock /> {job.type}
-                  </span>
-                </div>
-
-                <p className="job-description">
-                  {job.description.length > 150
-                    ? `${job.description.substring(0, 150)}...`
-                    : job.description}
-                </p>
+            <div
+              key={job.id}
+              className="bg-white p-6 rounded-lg border border-gray-200 shadow-sm hover:shadow-md transition-shadow"
+            >
+              <div className="mb-4">
+                <h3 className="text-xl font-semibold text-gray-900">
+                  {job.title}
+                </h3>
+                <p className="text-primary font-medium">{job.company}</p>
               </div>
 
-              <div className="job-actions">
-                <button
-                  onClick={() => handleApply(job.id)}
-                  className="apply-button"
-                >
-                  Apply Now
-                </button>
-                <button className="save-button">Save</button>
+              <div className="flex flex-wrap gap-3 text-sm text-gray-600 mb-4">
+                <span className="flex items-center gap-1">
+                  <FaMapMarkerAlt className="text-gray-400" /> {job.location}
+                </span>
+                <span className="flex items-center gap-1">
+                  <FaMoneyBillWave className="text-gray-400" /> $
+                  {job.min_salary} - ${job.max_salary}
+                </span>
+                <span className="flex items-center gap-1">
+                  <FaBriefcase className="text-gray-400" /> {job.type}
+                </span>
               </div>
+
+              <p className="text-gray-700 mb-6">
+                {job.description.length > 150
+                  ? `${job.description.substring(0, 150)}...`
+                  : job.description}
+              </p>
+
+              <button className="w-full py-2 bg-primary text-white rounded-lg hover:bg-primary-dark transition-colors">
+                Apply Now
+              </button>
             </div>
           ))
         ) : (
-          <div className="no-jobs">
-            <h3>No jobs found matching your criteria</h3>
-            <p>Try adjusting your search or filters</p>
+          <div className="col-span-full text-center py-12">
+            <h3 className="text-xl font-medium text-gray-700 mb-4">
+              No jobs found matching your criteria
+            </h3>
+            <button
+              onClick={resetFilters}
+              className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
+            >
+              Clear all filters
+            </button>
           </div>
         )}
       </div>
