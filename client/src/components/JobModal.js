@@ -1,20 +1,38 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { FaTimes, FaPaperclip } from "react-icons/fa";
+import { useDispatch, useSelector } from "react-redux";
+import { submitJobApplication, reset } from "../redux/applicationSlice";
+import { toast } from "react-toastify";
+
 
 function JobModal({ job, onClose, onSubmit }) {
+
+    const dispatch = useDispatch();
+
   const [coverLetter, setCoverLetter] = useState("");
   const [cvLink, setCvLink] = useState("");
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    onSubmit({
-      jobId: job.id,
-      coverLetter,
-      cvLink,
-    });
-  };
+  const { loading, error, success, message } = useSelector(
+    (state) => state.jobApplication
+  );
+  
+    const handleSubmit = (e) => {
+      e.preventDefault();
+      dispatch(submitJobApplication({
+        job_id: job.id,
+        cover_letter: coverLetter,
+        cv_link: cvLink
+      }));
+    };
 
-
+   useEffect(() => {
+     if (success) {
+      toast.success(message || "Application submitted!");
+      dispatch(reset());
+      onClose();
+     }
+   }, [success, dispatch, onClose]);
+  
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-end z-50">
       <div className="bg-white h-full w-full max-w-lg flex flex-col">
@@ -34,18 +52,14 @@ function JobModal({ job, onClose, onSubmit }) {
         {/* Modal Body */}
         <div className="flex-1 overflow-y-auto p-6">
           <form onSubmit={handleSubmit} className="space-y-6">
-
             <div className="position-details">
-
               <ul>
-              
                 <li>
                   <strong>Location:</strong> {job.location}
                 </li>
                 <li>
-                  <strong>Salary:</strong>  ${job.max_salary}
+                  <strong>Salary:</strong> ${job.max_salary}
                 </li>
-        
               </ul>
             </div>
             {/* Cover Letter */}
@@ -79,9 +93,11 @@ function JobModal({ job, onClose, onSubmit }) {
                   className="flex-1 focus:outline-none focus:ring-0"
                 />
               </div>
-          
             </div>
 
+            {error && <p className="text-red-600">{error}</p>}
+
+            
             {/* Modal Actions */}
             <div className="flex justify-end space-x-3 pt-4">
               <button
@@ -95,7 +111,7 @@ function JobModal({ job, onClose, onSubmit }) {
                 type="submit"
                 className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
               >
-                Submit Proposal
+                {loading ? "Submitting..." : "Submit"}
               </button>
             </div>
           </form>

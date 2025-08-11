@@ -1,11 +1,13 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import './index.css';
 import Root from './Root';
 import { Provider, useSelector } from "react-redux";
 import { store } from "./redux/store";
 import TopBar from './components/Topbar';
 import { BrowserRouter } from "react-router-dom";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import './index.css';
 
 
 
@@ -15,8 +17,19 @@ const AppWrapper = () => {
 
   return (
     <>
+      <ToastContainer
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+      />
       {user && <TopBar />}
-       <Root />
+      <Root />
     </>
   );
 };
