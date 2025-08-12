@@ -50,3 +50,8 @@ npm start
 
 - applicant email: claudine.uwase@gmail.com
 - admin password: XoViJFj2vl@
+
+
+### Remaining tasks
+
+- Writing tests for both backend & frontend
