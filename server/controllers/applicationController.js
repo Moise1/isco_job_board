@@ -22,7 +22,7 @@ export const applyForJob = async (req, res) => {
     await db.run(
       `INSERT INTO applications (user_id, job_id, cover_letter, cv_link, status, applied_at) 
        VALUES (?, ?, ?, ?, 'pending', CURRENT_TIMESTAMP)`,
-      [user_id, job_id, cover_letter || "", cv_link]
+      [user_id, job_id, cover_letter, cv_link]
     );
 
     res.status(201).json({ message: "Application submitted successfully" });

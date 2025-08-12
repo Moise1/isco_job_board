@@ -23,6 +23,7 @@ import {
 import * as wcc from "world-countries-capitals";
 
 import { toast } from "react-toastify";
+import JobModal from "../components/JobModal";
 
 const { Sider, Content } = Layout;
 const { Title } = Typography;
@@ -63,7 +64,6 @@ export default function AdminDashboard() {
        }));
        setLocations(formattedLocations);
      } catch (error) {
-       console.error("Failed to load locations:", error);
        // Fallback to some basic locations if the package fails
        setLocations([
          { label: "Kigali, Rwanda", value: "Kigali, Rwanda" },
@@ -89,7 +89,6 @@ const handleCreateOrUpdate = (values) => {
     )
       .unwrap()
       .then((updatedJob) => {
-        console.log("Job updated successfully:", updatedJob);
         toast.success("Job updated successfully");
         // Optionally refresh data from server
         dispatch(fetchJobs());
@@ -103,7 +102,6 @@ const handleCreateOrUpdate = (values) => {
     dispatch(createJob(values))
       .unwrap()
       .then((newJob) => {
-        console.log("Job created successfully:", newJob);
         toast.success("Job created successfully");
         dispatch(fetchJobs()); // Refresh data
       })
@@ -254,9 +252,10 @@ const handleCreateOrUpdate = (values) => {
       </Layout>
 
       {/* Job Create/Edit Modal */}
-      <Modal
+      <JobModal
         title={currentJob ? "Edit Job" : "Create Job"}
         open={jobModalOpen}
+        onSubmit={handleCreateOrUpdate}
         onCancel={() => {
           setJobModalOpen(false);
           setCurrentJob(null);
@@ -264,7 +263,7 @@ const handleCreateOrUpdate = (values) => {
         }}
         footer={null}
       >
-        <Form form={form} layout="vertical" onFinish={handleCreateOrUpdate}>
+        {/* <Form form={form} layout="vertical" onFinish={handleCreateOrUpdate}> */}
           <Form.Item
             name="title"
             label="Job Title"
@@ -336,8 +335,8 @@ const handleCreateOrUpdate = (values) => {
               </Button>
             </div>
           </Form.Item>
-        </Form>
-      </Modal>
+        {/* </Form> */}
+      </JobModal>
 
       {/* Delete Confirmation Modal */}
       <Modal

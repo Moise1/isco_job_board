@@ -5,14 +5,14 @@ import api from '../api';
 // Async thunk to submit job application
 export const submitJobApplication = createAsyncThunk(
   'jobApplication/submit',
-  async ({ job_id, cover_letter, cv_link }, { rejectWithValue }) => {
+  async ({job_id, cover_letter, cv_link }, { rejectWithValue }) => {
       try {
         
             const token = localStorage.getItem("token");
 
             const response = await api.post(
             "/applications",
-            {
+              {
               job_id,
               cover_letter,
               cv_link,

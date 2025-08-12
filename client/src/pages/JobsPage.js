@@ -9,7 +9,8 @@ import {
   Row,
   Col,
   Space,
-  Modal,
+  List,
+  Form,
   Typography,
   Tag,
 } from "antd";
@@ -17,6 +18,7 @@ import {
   SearchOutlined,
   EnvironmentOutlined,
   DollarOutlined,
+  PaperClipOutlined,
 } from "@ant-design/icons";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -28,9 +30,11 @@ import {
 } from "../redux/jobsSlice";
 import * as wcc from "world-countries-capitals";
 import JobModal from "../components/JobModal";
+import {submitJobApplication, reset} from "../redux/applicationsSlice";
+import { toast } from "react-toastify";
 
 const { Option } = Select;
-const { Title, Paragraph } = Typography;
+const { Title, Paragraph, Text } = Typography;
 
 function JobsPage() {
   const [selectedJob, setSelectedJob] = useState(null);
@@ -38,11 +42,23 @@ function JobsPage() {
   const { filteredJobs, loading, error, filters } = useSelector(
     (state) => state.jobs
   );
+
+ 
+  const [form] = Form.useForm();
+  
+  const {
+    loading: loadingApplication,
+    error: errorApplication,
+    success,
+    message: apiMessage,
+  } = useSelector((state) => state.jobApplications);
+
   const [locations, setLocations] = useState([]);
   const [salaryRange, setLocalSalaryRange] = useState({
     min_salary: null,
     max_salary: null,
   });
+
 
   useEffect(() => {
     dispatch(fetchJobs());
@@ -71,6 +87,32 @@ function JobsPage() {
     dispatch(clearFilters());
     setLocalSalaryRange({ min_salary: null, max_salary: null });
   };
+
+  const handleSubmit = (values) => {
+
+    const applicationData = {
+      job_id: selectedJob.id,
+      cover_letter: values.cover_letter,
+      cv_link: values.cv_link,
+    };
+    dispatch(submitJobApplication(applicationData));
+  };
+  
+  const onCancel = () => setSelectedJob(null);
+  
+   useEffect(() => {
+     if (success) {
+       toast.success(apiMessage);
+       form.resetFields();
+       onCancel();
+       dispatch(reset());
+     }
+     if (error) {
+       toast.error(error || "Failed to submit application");
+       dispatch(reset());
+     }
+   }, [success, error, apiMessage, form, dispatch]);
+
 
   return (
     <div style={{ maxWidth: 1200, margin: "auto", padding: "24px" }}>
@@ -173,24 +215,74 @@ function JobsPage() {
       </Row>
 
       {/* Modal */}
-      <Modal
+      <JobModal
         title={selectedJob?.title}
         open={!!selectedJob}
+        onSubmit={handleSubmit}
         footer={null}
-        onCancel={() => setSelectedJob(null)}
+        onCancel={onCancel}
         destroyOnHidden
       >
-        {selectedJob && (
-          <JobModal
-            job={selectedJob}
-            onClose={() => setSelectedJob(null)}
-            onSubmit={(applicationData) => {
-              console.log("Applying for job:", selectedJob.id, applicationData);
-              setSelectedJob(null);
-            }}
+        <List
+          size="small"
+          dataSource={[
+            { label: "Location", value: selectedJob?.location },
+            {
+              label: "Salary",
+              value: `$${selectedJob?.min_salary} - $${selectedJob?.max_salary}`,
+            },
+          ]}
+          renderItem={(item) => (
+            <List.Item>
+              <Text strong>{item.label}:</Text> {item.value}
+            </List.Item>
+          )}
+          className="mb-6"
+        />
+
+        {/* Cover Letter */}
+        <Form.Item
+          name="cover_letter"
+          label="Cover Letter"
+          rules={[
+            { required: true, message: "Please enter your cover letter" },
+          ]}
+        >
+          <Input.TextArea
+            rows={8}
+            placeholder="Explain why you're the best fit for this position..."
+            className="w-full"
           />
-        )}
-      </Modal>
+        </Form.Item>
+
+        {/* CV/Resume Link */}
+        <Form.Item
+          name="cv_link"
+          label="CV/Resume Link"
+          rules={[
+            { required: true, message: "Please provide your resume link" },
+            { type: "url", message: "Please enter a valid URL" },
+          ]}
+        >
+          <Input
+            prefix={<PaperClipOutlined className="text-gray-400" />}
+            placeholder="Paste a link to your CV/Resume"
+          />
+        </Form.Item>
+
+        {/* Submit Button */}
+        <Form.Item className="mb-0">
+          <Button
+            type="primary"
+            htmlType="submit"
+            loading={loading}
+            block
+            size="large"
+          >
+            Submit Application
+          </Button>
+        </Form.Item>
+      </JobModal>
     </div>
   );
 }
