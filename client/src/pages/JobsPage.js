@@ -51,7 +51,7 @@ function JobsPage() {
     error: errorApplication,
     success,
     message: apiMessage,
-  } = useSelector((state) => state.jobApplications);
+  } = useSelector((state) => state.applications);
 
   const [locations, setLocations] = useState([]);
   const [salaryRange, setLocalSalaryRange] = useState({
@@ -275,7 +275,7 @@ function JobsPage() {
           <Button
             type="primary"
             htmlType="submit"
-            loading={loading}
+            loading={loadingApplication}
             block
             size="large"
           >

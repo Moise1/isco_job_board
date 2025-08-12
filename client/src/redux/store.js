@@ -7,6 +7,6 @@ export const store = configureStore({
   reducer: {
     users: usersReducer,
     jobs: jobsReducer,
-    jobApplications: jobApplicationReducer
+    applications: jobApplicationReducer
   },
 });

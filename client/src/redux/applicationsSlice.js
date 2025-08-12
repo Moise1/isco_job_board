@@ -30,6 +30,26 @@ export const submitJobApplication = createAsyncThunk(
   }
 );
 
+
+export const fetchApplications = createAsyncThunk(
+  "applications/fetchApplications",
+  async (jobId, { rejectWithValue }) => {
+    try {
+      const token = localStorage.getItem("token");
+      const response = await api.get(`/applications/${jobId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(
+        error.response?.data || "Failed to fetch applications"
+      );
+    }
+  }
+);
+
 const jobApplicationSlice = createSlice({
   name: "jobApplication",
   initialState: {
@@ -37,6 +57,7 @@ const jobApplicationSlice = createSlice({
     error: null,
     success: false,
     message: null,
+    data: [],
   },
   reducers: {
     reset: (state) => {
@@ -44,6 +65,9 @@ const jobApplicationSlice = createSlice({
       state.error = null;
       state.success = false;
       state.message = null;
+    },
+    clearApplications: (state) => {
+      state.data = [];
     },
   },
   extraReducers: (builder) => {
@@ -63,11 +87,26 @@ const jobApplicationSlice = createSlice({
         state.error =
           typeof action.payload === "string"
             ? action.payload
-                : JSON.stringify(action.payload);
+            : JSON.stringify(action.payload);
         state.message = null;
+      })
+      
+      // Fetch applications
+
+      .addCase(fetchApplications.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchApplications.fulfilled, (state, action) => {
+        state.loading = false;
+        state.data = action.payload;
+      })
+      .addCase(fetchApplications.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
       });
   },
 });
 
-export const { reset } = jobApplicationSlice.actions;
+export const { reset, clearApplications } = jobApplicationSlice.actions;
 export default jobApplicationSlice.reducer;
