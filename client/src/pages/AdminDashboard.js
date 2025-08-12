@@ -31,7 +31,6 @@ const { Option } = Select;
 export default function AdminDashboard() {
   const dispatch = useDispatch();
 
-
   const { jobs, filteredJobs, loading } = useSelector((state) => state.jobs);
 
   const [activeTab, setActiveTab] = useState("jobs");

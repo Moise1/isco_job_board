@@ -67,6 +67,7 @@ export default function Root() {
           </AdminRoute>
         }
       />
+
     </Routes>
   );
 }
