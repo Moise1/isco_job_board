@@ -1,9 +1,14 @@
 import React, { useState, useRef, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
+
 
 export default function TopBar() {
   const dispatch = useDispatch();
-  const {user} = useSelector((state) => state.users); 
+  const navigate = useNavigate();
+
+  const { user } = useSelector((state) => state.users); 
+  
     
   const [open, setOpen] = useState(false);
   const dropdownRef = useRef(null);
@@ -22,13 +27,13 @@ export default function TopBar() {
   }, []);
 
   const handleLogout = () => {
-    // Dispatch logout action or do your logout logic here
-    dispatch({ type: "auth/logout" }); // example
+    dispatch({ type: "auth/logout" });
+    navigate("/login"); 
   };
 
   return (
     <div className="bg-white shadow px-6 py-3 flex justify-end items-center gap-4">
-      <div className="text-lg font-semibold">Hey, {user || "User"}</div>
+      <div className="text-lg font-semibold">Hey, {user?.first_name || "User"}</div>
 
       <div className="relative" ref={dropdownRef}>
         <button

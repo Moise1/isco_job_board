@@ -42,14 +42,32 @@ export const loginUser = createAsyncThunk(
 // SIGNUP thunk
 export const signupUser = createAsyncThunk(
   "auth/signupUser",
-  async ({ name, email, password }, { rejectWithValue }) => {
+  async ({ first_name, last_name, email, password, navigate }, { rejectWithValue }) => {
     try {
-      const response = await api.post("/auth/signup", {
-        name,
+      const res = await api.post("/auth/register", {
+        first_name,
+        last_name,
         email,
         password,
       });
-      return response.data; // { user, token }
+
+      const { accessToken } = res.data;
+
+      // Save token to localStorage
+      localStorage.setItem("token", accessToken);
+
+      // Decode the token to get the role
+      const decoded = jwtDecode(accessToken);
+      const role = decoded.role; 
+
+      // Redirect based on role
+      if (role === "applicant") {
+        navigate("/jobs");
+      }else {
+        navigate("/"); // fallback
+      }
+
+      return { token: accessToken, user: decoded }; 
     } catch (error) {
       return rejectWithValue(error.response?.data || error.message);
     }
@@ -85,7 +103,7 @@ const authSlice = createSlice({
         state.user = action.payload.user;
         state.token = action.payload.token;
         localStorage.setItem("token", action.payload.token);
-        localStorage.setItem("user", JSON.stringify(action.payload.user.first_name));
+        localStorage.setItem("user", JSON.stringify(action.payload.user));
       })
       .addCase(loginUser.rejected, (state, action) => {
         state.loading = false;
@@ -102,6 +120,8 @@ const authSlice = createSlice({
         state.user = action.payload.user;
         state.token = action.payload.token;
         localStorage.setItem("token", action.payload.token);
+        localStorage.setItem("user",JSON.stringify(action.payload.user));
+
       })
       .addCase(signupUser.rejected, (state, action) => {
         state.loading = false;

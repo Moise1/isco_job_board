@@ -11,7 +11,7 @@ const runMigrations = async () => {
       name TEXT,
       email TEXT UNIQUE,
       password TEXT,
-      role TEXT DEFAULT 'user'
+      role TEXT DEFAULT 'applicant'
     );
 
     CREATE TABLE IF NOT EXISTS jobs (
