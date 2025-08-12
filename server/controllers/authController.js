@@ -81,6 +81,7 @@ export const login = async (req, res) => {
       return res.status(401).json({ error: "Invalid credentials" });
     }
 
+  
     // Access token (15 minutes)
     const accessToken = jwt.sign(
       { id: user.id, role: user.role, first_name: user.first_name },

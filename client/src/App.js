@@ -48,7 +48,7 @@ function App() {
         <div className="container">
           <div className="hero-text">
             <h1>Your Next Career Move Starts Here</h1>
-            <p>Connekting top talent with great companies</p>
+            <p>Connecting top talent with great companies</p>
             <div className="hero-buttons">
               <button className="primary-button">Find Jobs</button>
               <button className="secondary-button">Post Jobs</button>

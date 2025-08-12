@@ -1,82 +1,74 @@
-import React, { useState, useRef, useEffect } from "react";
+import React from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
-
+import { Dropdown, Menu, Avatar, Typography, Space } from "antd";
+import {
+  UserOutlined,
+  SettingOutlined,
+  LogoutOutlined,
+} from "@ant-design/icons";
 
 export default function TopBar() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-
-  const { user } = useSelector((state) => state.users); 
-  
-    
-  const [open, setOpen] = useState(false);
-  const dropdownRef = useRef(null);
-
-  // Close dropdown if clicked outside
-  useEffect(() => {
-    function handleClickOutside(event) {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-        setOpen(false);
-      }
-    }
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, []);
+  const { user } = useSelector((state) => state.users);
 
   const handleLogout = () => {
     dispatch({ type: "auth/logout" });
-    navigate("/login"); 
+    navigate("/login");
   };
 
+  const menu = (
+    <Menu
+      items={[
+        {
+          key: "account",
+          label: "Account",
+          icon: <UserOutlined />,
+          onClick: () => navigate("/account"),
+        },
+        {
+          key: "settings",
+          label: "Settings",
+          icon: <SettingOutlined />,
+          onClick: () => navigate("/settings"),
+        },
+        {
+          type: "divider",
+        },
+        {
+          key: "logout",
+          label: "Logout",
+          icon: <LogoutOutlined />,
+          danger: true,
+          onClick: handleLogout,
+        },
+      ]}
+    />
+  );
+
   return (
-    <div className="bg-white shadow px-6 py-3 flex justify-end items-center gap-4">
-      <div className="text-lg font-semibold">Hey, {user?.first_name || "User"}</div>
-
-      <div className="relative" ref={dropdownRef}>
-        <button
-          onClick={() => setOpen((prev) => !prev)}
-          className="bg-gray-100 px-4 py-2 rounded-md hover:bg-gray-200 focus:outline-none"
-        >
-          Profile ▼
-        </button>
-
-        {open && (
-          <div className="absolute right-0 mt-2 w-40 bg-white border border-gray-200 rounded-md shadow-lg z-50">
-            <button
-              className="block w-full text-left px-4 py-2 hover:bg-gray-100"
-              onClick={() => {
-                setOpen(false);
-                // Navigate to account page
-                // e.g. navigate("/account")
-              }}
-            >
-              Account
-            </button>
-            <button
-              className="block w-full text-left px-4 py-2 hover:bg-gray-100"
-              onClick={() => {
-                setOpen(false);
-                // Navigate to settings page
-                // e.g. navigate("/settings")
-              }}
-            >
-              Settings
-            </button>
-            <button
-              className="block w-full text-left px-4 py-2 hover:bg-gray-100 text-red-600"
-              onClick={() => {
-                setOpen(false);
-                handleLogout();
-              }}
-            >
-              Logout
-            </button>
-          </div>
-        )}
-      </div>
+    <div
+      style={{
+        background: "#fff",
+        padding: "8px 24px",
+        display: "flex",
+        justifyContent: "flex-end",
+        alignItems: "center",
+        boxShadow: "0 2px 8px rgba(0,0,0,0.05)",
+      }}
+    >
+      <Dropdown overlay={menu} placement="bottomRight" trigger={["click"]}>
+        <Space style={{ cursor: "pointer" }}>
+          <Avatar
+            style={{ backgroundColor: "#1890ff" }}
+            icon={<UserOutlined />}
+          />
+          <Typography.Text strong>
+            Hey, {user?.first_name || "User"}
+          </Typography.Text>
+        </Space>
+      </Dropdown>
     </div>
   );
 }
