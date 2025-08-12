@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchJobs, createJob, updateJob, deleteJob } from "../redux/jobsSlice";
+import { fetchApplications } from "../redux/applicationsSlice";
 import {
   Layout,
   Menu,
@@ -11,7 +12,8 @@ import {
   Input,
   InputNumber,
   Typography,
-  Select
+  Select,
+  Tag
 } from "antd";
 import {
   PlusOutlined,
@@ -29,10 +31,17 @@ const { Sider, Content } = Layout;
 const { Title } = Typography;
 const { Option } = Select;
 
+const applicationStatusColors = {
+  pending: "orange",
+  reviewed: "blue",
+  accepted: "green",
+  rejected: "red",
+};
+
+
 export default function AdminDashboard() {
   const dispatch = useDispatch();
 
-  const { jobs, filteredJobs, loading } = useSelector((state) => state.jobs);
 
   const [activeTab, setActiveTab] = useState("jobs");
   const [jobModalOpen, setJobModalOpen] = useState(false);
@@ -40,8 +49,15 @@ export default function AdminDashboard() {
   const [currentJob, setCurrentJob] = useState(null);
   const [selectedJobId, setSelectedJobId] = useState(null);
   const [locations, setLocations] = useState([]);
-  
+  const [selectedJobForApplications, setSelectedJobForApplications] = useState(null);
 
+
+  const { jobs, filteredJobs, loading } = useSelector((state) => state.jobs);
+
+   const { data: applications, loading: appsLoading } = useSelector(
+     (state) => state.applications
+   );
+  
   const [form] = Form.useForm();
 
 
@@ -50,6 +66,12 @@ export default function AdminDashboard() {
      prepareLocations()
    }, [dispatch]);
 
+   useEffect(() => {
+     if (activeTab === "applications" && selectedJobForApplications) {
+       dispatch(fetchApplications(selectedJobForApplications));
+     }
+   }, [activeTab, selectedJobForApplications, dispatch]);
+  
   const prepareLocations = () => {
      try {
        const countriesData = wcc.getAllCountryDetails();
@@ -181,7 +203,71 @@ const handleCreateOrUpdate = (values) => {
         </>
       ),
     },
+    {
+      title: "Applications",
+      key: "applications",
+      render: (_, record) => (
+        <Button
+          type="link"
+          onClick={() => {
+            setSelectedJobForApplications(record.id);
+            setActiveTab("applications");
+          }}
+        >
+          View Applications
+        </Button>
+      ),
+    },
   ];
+
+
+
+   const applicationColumns = [
+     {
+       title: "Applicant",
+       dataIndex: "first_name",
+       key: "applicant",
+       render: (_, record) => `${record.first_name} ${record.last_name}`,
+     },
+     {
+       title: "Email",
+       dataIndex: "email",
+       key: "email",
+     },
+     {
+       title: "Cover Letter",
+       dataIndex: "cover_letter",
+       key: "cover_letter",
+       ellipsis: true,
+     },
+     {
+       title: "CV Link",
+       dataIndex: "cv_link",
+       key: "cv_link",
+       render: (text) => (
+         <a href={text} target="_blank" rel="noopener noreferrer">
+           View CV
+         </a>
+       ),
+     },
+     {
+       title: "Status",
+       dataIndex: "status",
+       key: "status",
+       render: (status) => (
+         <Tag color={applicationStatusColors[status] || "gray"}>
+           {status.toUpperCase()}
+         </Tag>
+       ),
+     },
+     {
+       title: "Applied At",
+       dataIndex: "applied_at",
+       key: "applied_at",
+       render: (date) => new Date(date).toLocaleString(),
+     },
+   ];
+
 
   return (
     <Layout style={{ height: "100vh" }}>
@@ -243,10 +329,29 @@ const handleCreateOrUpdate = (values) => {
           )}
 
           {activeTab === "applications" && (
-            <div>
-              <Title level={3}>Applications</Title>
-              <p>Application management will appear here.</p>
-            </div>
+            <>
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  marginBottom: 16,
+                }}
+              >
+                <Title level={3}>
+                  Applications for:{" "}
+                  {jobs.find((j) => j.id === selectedJobForApplications)?.title}
+                </Title>
+                <Button onClick={() => setActiveTab("jobs")}>
+                  Back to Jobs
+                </Button>
+              </div>
+              <Table
+                columns={applicationColumns}
+                dataSource={applications}
+                rowKey="id"
+                loading={appsLoading}
+              />
+            </>
           )}
         </Content>
       </Layout>
@@ -264,77 +369,73 @@ const handleCreateOrUpdate = (values) => {
         footer={null}
       >
         {/* <Form form={form} layout="vertical" onFinish={handleCreateOrUpdate}> */}
-          <Form.Item
-            name="title"
-            label="Job Title"
-            rules={[{ required: true, message: "Please enter a title" }]}
+        <Form.Item
+          name="title"
+          label="Job Title"
+          rules={[{ required: true, message: "Please enter a title" }]}
+        >
+          <Input />
+        </Form.Item>
+        <Form.Item
+          name="description"
+          label="Description"
+          rules={[{ required: true, message: "Please enter a description" }]}
+        >
+          <Input.TextArea rows={4} />
+        </Form.Item>
+        <Form.Item
+          name="location"
+          label="Location"
+          rules={[
+            {
+              required: true,
+              message: "Please select a location",
+            },
+          ]}
+        >
+          <Select
+            showSearch
+            allowClear
+            style={{ width: "100%" }}
+            placeholder="Search or select a location"
+            optionFilterProp="children"
+            filterOption={(input, option) => option.children.includes(input)}
+            notFoundContent={<div>No locations found</div>}
           >
-            <Input />
-          </Form.Item>
-          <Form.Item
-            name="description"
-            label="Description"
-            rules={[{ required: true, message: "Please enter a description" }]}
-          >
-            <Input.TextArea rows={4} />
-          </Form.Item>
-          <Form.Item
-            name="location"
-            label="Location"
-            rules={[
-              {
-                required: true,
-                message: "Please select a location",
-              },
-            ]}
-          >
-            <Select
-              showSearch
-              allowClear
-              style={{ width: "100%" }}
-              placeholder="Search or select a location"
-              optionFilterProp="children"
-              filterOption={(input, option) =>
-                option.children.includes(input)
-              }
-              notFoundContent={<div>No locations found</div>}
-            >
-              {locations.map((loc) => (
-                <Option
-                  key={loc.value}
-                  value={loc.value}
-                  // Optional: you can add additional data as data- attributes
-                  data-countrycode={loc.countryCode}
-                >
-                  {loc.label}
-                </Option>
-              ))}
-            </Select>
-          </Form.Item>
-          <Form.Item
-            name="min_salary"
-            label="Min Salary"
-            rules={[{ required: true, message: "Please enter min salary" }]}
-          >
-            <InputNumber style={{ width: "100%" }} min={0} />
-          </Form.Item>
-          <Form.Item
-            name="max_salary"
-            label="Max Salary"
-            rules={[{ required: true, message: "Please enter max salary" }]}
-          >
-            <InputNumber style={{ width: "100%" }} min={0} />
-          </Form.Item>
-          <Form.Item>
-            <div
-              style={{ display: "flex", justifyContent: "flex-end", gap: 8 }}
-            >
-              <Button onClick={() => setJobModalOpen(false)}>Cancel</Button>
-              <Button type="primary" htmlType="submit">
-                {currentJob ? "Update Job" : "Post Job"}
-              </Button>
-            </div>
-          </Form.Item>
+            {locations.map((loc) => (
+              <Option
+                key={loc.value}
+                value={loc.value}
+                // Optional: you can add additional data as data- attributes
+                data-countrycode={loc.countryCode}
+              >
+                {loc.label}
+              </Option>
+            ))}
+          </Select>
+        </Form.Item>
+        <Form.Item
+          name="min_salary"
+          label="Min Salary"
+          rules={[{ required: true, message: "Please enter min salary" }]}
+        >
+          <InputNumber style={{ width: "100%" }} min={0} />
+        </Form.Item>
+        <Form.Item
+          name="max_salary"
+          label="Max Salary"
+          rules={[{ required: true, message: "Please enter max salary" }]}
+        >
+          <InputNumber style={{ width: "100%" }} min={0} />
+        </Form.Item>
+        <Form.Item>
+          <div style={{ display: "flex", justifyContent: "flex-end", gap: 8 }}>
+            <Button onClick={() => setJobModalOpen(false)}>Cancel</Button>
+            <Button type="primary" htmlType="submit">
+              {currentJob ? "Update Job" : "Post Job"}
+            </Button>
+          </div>
+        </Form.Item>
         {/* </Form> */}
       </JobModal>
 

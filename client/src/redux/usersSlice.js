@@ -1,4 +1,3 @@
-// src/store/authSlice.js
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import api from "../api/index"; // Adjust the import path as necessary
 import {jwtDecode} from "jwt-decode";
