@@ -1,128 +1,144 @@
 import React, { useState } from "react";
-import { FaEnvelope, FaLock, FaEye, FaEyeSlash } from "react-icons/fa";
 import { useDispatch, useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
-import { loginUser } from "../redux/usersSlice"; 
+import { useNavigate, Link } from "react-router-dom";
+import { loginUser } from "../redux/usersSlice";
+import {
+  Form,
+  Input,
+  Button,
+  Typography,
+  Checkbox,
+  Card,
+  Space,
+  Alert,
+} from "antd";
+import {
+  MailOutlined,
+  LockOutlined,
+  EyeTwoTone,
+  EyeInvisibleOutlined,
+} from "@ant-design/icons";
 
+const { Title, Text } = Typography;
 
-function LoginPage() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
-
-  const navigate = useNavigate();
-
-
+export default function LoginPage() {
+  const [form] = Form.useForm();
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const { loading, error } = useSelector((state) => state.users);
 
-   const handleSubmit = (e) => {
-     e.preventDefault();
-     dispatch(loginUser({ email, password, navigate }));
-   };
+  const handleSubmit = (values) => {
+    dispatch(
+      loginUser({ email: values.email, password: values.password, navigate })
+    );
+  };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
-      <div className="bg-white w-full max-w-md p-8 rounded-lg shadow-md">
-        {/* Header */}
-        <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-primary mb-2">JobConnekt</h1>
-          <h2 className="text-xl font-semibold text-gray-800 mb-1">
-            Welcome Back
-          </h2>
-          <p className="text-gray-600">Sign in to access your account</p>
+    <div
+      style={{
+        minHeight: "100vh",
+        background: "#f5f6fa",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        padding: "20px",
+      }}
+    >
+      <Card
+        style={{
+          maxWidth: 400,
+          width: "100%",
+          borderRadius: 12,
+          boxShadow: "0 4px 20px rgba(0,0,0,0.05)",
+        }}
+      >
+        <div style={{ textAlign: "center", marginBottom: 24 }}>
+          <Title level={2} style={{ marginBottom: 0 }}>
+            JobConnekt
+          </Title>
+          <Text type="secondary">Sign in to access your account</Text>
         </div>
 
-        {/* Form */}
-        <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Email Input */}
-          <div className="relative">
-            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <FaEnvelope className="text-gray-400" />
-            </div>
-            <input
-              type="email"
-              placeholder="Email Address"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-              className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
-            />
-          </div>
+        {error && (
+          <Alert
+            message={error}
+            type="error"
+            showIcon
+            style={{ marginBottom: 16 }}
+          />
+        )}
 
-          {/* Password Input */}
-          <div className="relative">
-            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <FaLock className="text-gray-400" />
-            </div>
-            <input
-              type={showPassword ? "text" : "password"}
-              placeholder="Password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              className="w-full pl-10 pr-12 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+        <Form
+          form={form}
+          layout="vertical"
+          onFinish={handleSubmit}
+          initialValues={{ remember: true }}
+        >
+          {/* Email */}
+          <Form.Item
+            name="email"
+            label="Email Address"
+            rules={[
+              { required: true, message: "Please enter your email" },
+              { type: "email", message: "Please enter a valid email" },
+            ]}
+          >
+            <Input
+              prefix={<MailOutlined />}
+              placeholder="Enter your email"
+              size="large"
             />
-            <button
-              type="button"
-              onClick={() => setShowPassword(!showPassword)}
-              className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600"
-            >
-              {showPassword ? <FaEyeSlash /> : <FaEye />}
-            </button>
-          </div>
+          </Form.Item>
+
+          {/* Password */}
+          <Form.Item
+            name="password"
+            label="Password"
+            rules={[{ required: true, message: "Please enter your password" }]}
+          >
+            <Input.Password
+              prefix={<LockOutlined />}
+              placeholder="Enter your password"
+              size="large"
+              iconRender={(visible) =>
+                visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />
+              }
+            />
+          </Form.Item>
 
           {/* Options */}
-          <div className="flex items-center justify-between">
-            <div className="flex items-center">
-              <input
-                type="checkbox"
-                id="remember"
-                className="h-4 w-4 text-primary focus:ring-primary border-gray-300 rounded"
-              />
-              <label
-                htmlFor="remember"
-                className="ml-2 block text-sm text-gray-700"
-              >
-                Remember me
-              </label>
-            </div>
-            <a
-              href="/forgot-password"
-              className="text-sm text-primary hover:text-primary-dark"
-            >
-              Forgot password?
-            </a>
-          </div>
-
-          {/* Error Message */}
-          {error && <p className="text-red-500 text-sm text-center">{error}</p>}
+          <Form.Item>
+            <Space style={{ display: "flex", justifyContent: "space-between" }}>
+              <Form.Item name="remember" valuePropName="checked" noStyle>
+                <Checkbox>Remember me</Checkbox>
+              </Form.Item>
+              <Link to="/forgot-password">Forgot password?</Link>
+            </Space>
+          </Form.Item>
 
           {/* Submit Button */}
-          <button
-            type="submit"
-            disabled={loading}
-            className={`w-full py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary ${
-              loading ? "opacity-70 cursor-not-allowed" : ""
-            }`}
-          >
-            {loading ? "Signing In..." : "Sign In"}
-          </button>
-
-          {/* Sign Up Link */}
-          <p className="text-sm text-gray-600 text-center">
-            Don't have an account?{" "}
-            <a
-              href="/signup"
-              className="font-medium text-primary hover:text-primary-dark"
+          <Form.Item>
+            <Button
+              type="primary"
+              htmlType="submit"
+              variant="filled"
+              size="large"
+              block
+              loading={loading}
             >
-              Sign up
-            </a>
-          </p>
-        </form>
-      </div>
+              Sign In
+            </Button>
+          </Form.Item>
+        </Form>
+
+        {/* Sign Up Link */}
+        <Text style={{ display: "block", textAlign: "center" }}>
+          Don't have an account?{" "}
+          <Link to="/signup" style={{ fontWeight: 500 }}>
+            Sign up
+          </Link>
+        </Text>
+      </Card>
     </div>
   );
 }
-
-export default LoginPage;

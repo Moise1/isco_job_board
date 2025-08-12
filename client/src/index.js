@@ -7,7 +7,9 @@ import TopBar from './components/Topbar';
 import { BrowserRouter } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import './index.css';
+import { ConfigProvider } from "antd";
+
+// import './index.css';
 
 
 
@@ -28,8 +30,16 @@ const AppWrapper = () => {
         draggable
         pauseOnHover
       />
-      {user && <TopBar />}
-      <Root />
+      <ConfigProvider
+        theme={{
+          token: {
+            colorPrimary: "#6B3CFF"
+          },
+        }}
+      >
+        {user && <TopBar />}
+        <Root />
+      </ConfigProvider>
     </>
   );
 };
