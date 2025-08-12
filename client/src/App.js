@@ -187,7 +187,8 @@ function App() {
             match
           </p> */}
           <p>
-            Join thousands of  candidates finding their perfect next career opportunities
+            Join thousands of candidates finding their perfect next career
+            opportunities
           </p>
           <div className="cta-buttons">
             {/* <button className="primary-button">I'm Hiring</button> */}
@@ -230,7 +231,7 @@ function App() {
           </div>
 
           <div className="footer-bottom">
-            <p>© 2023 JobConnekt. All rights reserved.</p>
+            <p>© {new Date().getFullYear()} JobConnekt. All rights reserved.</p>
           </div>
         </div>
       </footer>
