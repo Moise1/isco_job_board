@@ -8,10 +8,11 @@ const runMigrations = async () => {
   await db.exec(`
     CREATE TABLE IF NOT EXISTS users (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
-      name TEXT,
+      first_name TEXT,
+      last_name TEXT,
       email TEXT UNIQUE,
       password TEXT,
-      role TEXT DEFAULT 'applicant'
+      role TEXT NULL
     );
 
     CREATE TABLE IF NOT EXISTS jobs (
