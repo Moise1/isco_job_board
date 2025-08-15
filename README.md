@@ -19,7 +19,7 @@ Follow these steps to run **JobConnekt** locally:
 ### 1️⃣ Clone the repository
 
 ```bash
-git clone https://github.com/your-username/jobconnekt.git
+git clone https://github.com/Moise1/jobconnekt.git
 
 ```
 
