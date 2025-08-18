@@ -3,6 +3,8 @@ import initDB from "./config/db.js";
 const runMigrations = async () => {
 
   const db = await initDB();
+
+
   
   console.log("Running migrations...");
   await db.exec(`
@@ -40,4 +42,9 @@ const runMigrations = async () => {
   console.log("Migrations completed ✅");
 };
 
-runMigrations();
+
+if (process.env.NODE_ENV !== "test") {
+  runMigrations();
+}
+
+export default runMigrations;
