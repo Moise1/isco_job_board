@@ -15,10 +15,17 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 5000;
 
+
 app.use(cors());
 app.use(morgan("dev"));
 app.use(bodyParser.json());
 
+// Basic route
+app.get("/", (req, res) => {
+  res.send("ISCO Job Board API is running");
+});
+
+// API routes
 app.use("/api/v1/auth", authRoutes);
 app.use("/api/v1/jobs", jobRoutes);
 app.use("/api/v1/applications", applicationRoutes);
@@ -29,10 +36,19 @@ app.use((err, req, res, next) => {
   res.status(500).json({ error: "Server Error" });
 });
 
-// Boot server after DB init
-initDB().then((db) => {
-  app.locals.db = db;
-  app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
-});
+// // Boot server after DB init
+// initDB().then((db) => {
+//   app.locals.db = db;
+//   app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+// });
 
 export default app;
+
+export const startServer = async () => {
+  const db = await initDB();
+  app.locals.db = db;
+  const server = app.listen(PORT, () =>
+    console.log(`Server running on port ${PORT}`)
+  );
+  return server; // return the server instance so you can close it in tests
+};

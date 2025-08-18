@@ -1,6 +1,10 @@
 import request from "supertest";
 import app from "../server.js"; 
 import runMigrations from "../migrate.js";
+import app, { startServer } from "../server.js";
+let server;
+
+
 
 const userData = {
     first_name: "John",
@@ -11,14 +15,19 @@ const userData = {
 
 
 beforeAll(async () => {
+  server = await startServer();
   process.env.NODE_ENV = "test"; // ensure test DB is used
-    await runMigrations(); // create tables in test DB
-    await app.locals.db.exec("DELETE FROM users");
+  await runMigrations(); // create tables in test DB
+  await app.locals.db.exec("DELETE FROM users");
     // await app.locals.db.exec("DELETE FROM jobs");
     // await app.locals.db.exec("DELETE FROM applications");
 
 });
 
+afterAll(async () => {
+  await app.locals.db.close(); // close SQLite connection
+  server.close(); // stop server
+});
 
 describe("Auth API", () => {
 
