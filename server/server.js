@@ -36,11 +36,6 @@ app.use((err, req, res, next) => {
   res.status(500).json({ error: "Server Error" });
 });
 
-// // Boot server after DB init
-// initDB().then((db) => {
-//   app.locals.db = db;
-//   app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
-// });
 
 export default app;
 
