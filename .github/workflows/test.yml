@@ -20,9 +20,11 @@ jobs:
           node-version: 20
 
       - name: Install dependencies
+        working-directory: server
         run: npm install
 
       - name: Run tests with coverage
+        working-directory: server
         run: npm test -- --coverage
 
       - name: Upload coverage reports to Codecov
