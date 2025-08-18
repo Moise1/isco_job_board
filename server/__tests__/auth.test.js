@@ -1,9 +1,7 @@
 import request from "supertest";
-import app from "../server.js"; 
 import runMigrations from "../migrate.js";
 import app, { startServer } from "../server.js";
 let server;
-
 
 
 const userData = {
