@@ -1,3 +1,5 @@
+[![codecov](https://codecov.io/gh/Moise1/isco_job_board/branch/main/graph/badge.svg?token=YOUR_TOKEN)](https://codecov.io/gh/Moise1/isco_job_board)
+
 # JobConnekt
 
 A **modern** and **user-friendly** job board for connecting job seekers with employers.
