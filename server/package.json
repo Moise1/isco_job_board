@@ -2,8 +2,9 @@
   "name": "isco_job_board_api",
   "version": "1.0.0",
   "main": "index.js",
+  "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "cross-env NODE_ENV=test jest --watchAll=false --runInBand --coverage",
     "migrate": "node migrate.js",
     "db:seed": "node dbSeed.js",
     "install-client": "cd ../client && npm install",
@@ -29,8 +30,13 @@
     "sqlite": "^5.1.1",
     "sqlite3": "^5.1.7"
   },
-  "type": "module",
   "devDependencies": {
-    "nodemon": "^3.1.10"
+    "@babel/core": "^7.28.3",
+    "@babel/preset-env": "^7.28.3",
+    "babel-jest": "^30.0.5",
+    "cross-env": "^10.0.0",
+    "jest": "^30.0.5",
+    "nodemon": "^3.1.10",
+    "supertest": "^7.1.4"
   }
 }

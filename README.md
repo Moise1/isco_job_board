@@ -1,3 +1,6 @@
+[![Coverage Status](https://coveralls.io/repos/github/Moise1/isco_job_board/badge.svg?branch=main)](https://coveralls.io/github/Moise1/isco_job_board?branch=main)
+
+
 # JobConnekt
 
 A **modern** and **user-friendly** job board for connecting job seekers with employers.

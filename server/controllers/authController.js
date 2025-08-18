@@ -59,7 +59,6 @@ export const register = async (req, res) => {
       refreshToken,
     });
   } catch (err) {
-    console.error("Error registering user:", err);
     res.status(400).json({ error: "Email already exists" });
   }
 };
@@ -103,7 +102,6 @@ export const login = async (req, res) => {
         refreshToken
       });
   } catch (error) {
-    console.error("Login error:", error);
     res.status(500).json({ error: "Internal server error" });
   }
 };
