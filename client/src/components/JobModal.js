@@ -1,8 +1,3 @@
-import React, { useEffect, useState } from "react";
-import { FaTimes, FaPaperclip } from "react-icons/fa";
-import { useDispatch, useSelector } from "react-redux";
-import { submitJobApplication, reset } from "../redux/applicationsSlice";
-import { toast } from "react-toastify";
 import { Form, Modal } from "antd";
 
 
