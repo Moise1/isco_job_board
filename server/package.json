@@ -9,7 +9,7 @@
     "db:seed": "node dbSeed.js",
     "install-client": "cd ../client && npm install",
     "client": "cd ../client && npm start",
-    "server": "nodemon index.js",
+    "server": "node index.js",
     "dev": "concurrently \"npm run server\" \"npm run client\"",
     "start": "npm run install-client && npm run dev"
   },
